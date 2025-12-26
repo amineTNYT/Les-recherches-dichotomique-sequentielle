@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recherche Séquentielle et Dichotomique</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #e2e8f0;
+        padding: 20px;
+        padding-bottom: 100px;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    h1 { 
+        text-align: center;
+        color: #f1f5f9;
+        margin-bottom: 30px;
+        font-size: 36px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .algorithm-selector {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .algo-btn {
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        border-radius: 10px;
+        transition: all 0.3s;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .algo-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .algo-btn.active {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .control-panel {
+        background: rgba(30, 41, 59, 0.8);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        margin-bottom: 30px;
+        border: 1px solid #334155;
+        backdrop-filter: blur(10px);
+    }
+
+    .buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    button {
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    #searchBtn {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+    #searchBtn:hover:not(:disabled) {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    #generateBtn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    #generateBtn:hover:not(:disabled) {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+    }
+
+    #speedBtn {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+    #speedBtn:hover:not(:disabled) {
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+
+    button:disabled {
+        background: #475569;
+        cursor: not-allowed;
+        opacity: 0.6;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .search-input {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .search-input label {
+        font-size: 18px;
+        font-weight: 600;
+        color: #f1f5f9;
+    }
+
+    .search-input input {
+        padding: 12px 20px;
+        font-size: 18px;
+        border-radius: 8px;
+        border: 2px solid #334155;
+        background: rgba(15, 23, 42, 0.7);
+        color: white;
+        width: 80px;
+        text-align: center;
+    }
+
+    .search-input input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    .array-display {
+        background: rgba(15, 23, 42, 0.7);
+        padding: 40px 20px;
+        border-radius: 12px;
+        box-shadow: 
+            0 4px 20px rgba(0,0,0,0.5),
+            inset 0 1px 0 rgba(255,255,255,0.1);
+        margin-bottom: 30px;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        border: 1px solid #334155;
+    }
+
+    .array-container {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        margin-bottom: 40px;
+    }
+
+    .array-element {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        border-radius: 8px;
+        transition: all 0.4s ease;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        color: white;
+        position: relative;
+        border: 2px solid transparent;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .default {
+        background: linear-gradient(135deg, #475569 0%, #334155 100%);
+        border-color: #64748b;
+    }
+
+    .current {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        border-color: #f59e0b;
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    }
+
+    .checked {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border-color: #3b82f6;
+        box-shadow: 0 3px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .found {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-color: #10b981;
+        transform: scale(1.2);
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.5);
+        animation: pulse 1s infinite;
+    }
+
+    .bounds {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        border-color: #8b5cf6;
+        box-shadow: 0 3px 15px rgba(139, 92, 246, 0.4);
+    }
+
+    .middle {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border-color: #ef4444;
+        transform: scale(1.15);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .not-found {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        border-color: #6b7280;
+        opacity: 0.7;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1.1); box-shadow: 0 3px 15px rgba(16, 185, 129, 0.4); }
+        50% { transform: scale(1.25); box-shadow: 0 5px 25px rgba(16, 185, 129, 0.6); }
+        100% { transform: scale(1.1); box-shadow: 0 3px 15px rgba(16, 185, 129, 0.4); }
+    }
+
+    .indicator {
+        position: absolute;
+        bottom: -40px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #f1f5f9;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        padding: 5px 15px;
+        border-radius: 6px;
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid #475569;
+    }
+
+    .pointer {
+        position: absolute;
+        top: -35px;
+        font-size: 28px;
+        color: #fca5a5;
+        animation: bounce 1.5s infinite;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.7));
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    #steps {
+        margin: 30px 10px;
+        max-width: 95%;
+        font-size: 18px;
+        min-height: 100px;
+        padding: 20px;
+        background: rgba(30, 41, 59, 0.8);
+        border-radius: 12px;
+        color: #e2e8f0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        line-height: 1.6;
+        border: 1px solid #334155;
+        backdrop-filter: blur(10px);
+    }
+
+    .status-panel {
+        background: rgba(30, 41, 59, 0.8);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        margin-bottom: 30px;
+        border: 1px solid #334155;
+        backdrop-filter: blur(10px);
+    }
+
+    .status-panel h3 {
+        color: #f1f5f9;
+        margin-bottom: 15px;
+        font-size: 20px;
+        text-align: center;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .status-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        background: rgba(15, 23, 42, 0.6);
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 4px solid #3b82f6;
+        text-align: center;
+        transition: all 0.3s;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .info-item:hover {
+        transform: translateY(-2px);
+        background: rgba(15, 23, 42, 0.8);
+        border-left: 4px solid #60a5fa;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #cbd5e1;
+        font-size: 14px;
+    }
+
+    .info-value {
+        font-size: 24px;
+        color: #f1f5f9;
+        font-weight: bold;
+        margin-top: 5px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .code-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .code-block {
+        background: #0f172a;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 
+            0 4px 20px rgba(0,0,0,0.5),
+            inset 0 1px 0 rgba(255,255,255,0.1);
+        border: 1px solid #334155;
+        transition: all 0.3s;
+    }
+
+    .code-block:hover {
+        transform: translateY(-5px);
+        box-shadow: 
+            0 8px 30px rgba(0,0,0,0.6),
+            inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .code-block h3 {
+        color: #fbbf24;
+        margin-bottom: 20px;
+        font-size: 20px;
+        text-align: center;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .code-block pre {
+        color: #e2e8f0;
+        font-family: 'Courier New', monospace;
+        font-size: 15px;
+        line-height: 1.6;
+        overflow-x: auto;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .keyword { color: #c084fc; font-weight: bold; text-shadow: 0 0 5px rgba(192, 132, 252, 0.3); }
+    .function { color: #60a5fa; }
+    .string { color: #34d399; }
+    .comment { color: #94a3b8; font-style: italic; }
+    .number { color: #fbbf24; }
+    .variable { color: #f472b6; }
+    .operator { color: #fb923c; }
+
+    .comparison-table {
+        background: rgba(30, 41, 59, 0.8);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        margin-bottom: 30px;
+        border: 1px solid #334155;
+        backdrop-filter: blur(10px);
+    }
+
+    .comparison-table h3 {
+        color: #f1f5f9;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 22px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #475569;
+    }
+
+    th {
+        background: rgba(15, 23, 42, 0.8);
+        color: #f1f5f9;
+        font-weight: 600;
+        border-top: 2px solid #3b82f6;
+    }
+
+    td {
+        background: rgba(15, 23, 42, 0.5);
+        color: #e2e8f0;
+    }
+
+    tr:hover td {
+        background: rgba(30, 41, 59, 0.8);
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    .watermark {
+        position: fixed;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        z-index: 1000;
+        box-shadow: 
+            0 4px 25px rgba(0,0,0,0.5),
+            0 0 20px rgba(16, 185, 129, 0.3);
+        border: 2px solid #10b981;
+        animation: watermarkFloat 4s infinite ease-in-out;
+        transition: all 0.3s;
+        backdrop-filter: blur(10px);
+    }
+
+    .watermark:hover {
+        animation-play-state: paused;
+        transform: translateX(-50%) scale(1.05);
+        border-color: #34d399;
+        box-shadow: 
+            0 6px 30px rgba(0,0,0,0.6),
+            0 0 25px rgba(52, 211, 153, 0.5);
+    }
+
+    .watermark a {
+        color: #10b981;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s;
+        animation: linkPulse 2s infinite;
+        text-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+    }
+
+    .watermark a:hover {
+        color: #ffffff;
+        text-shadow: 0 0 10px #10b981;
+        animation: none;
+    }
+
+    @keyframes watermarkFloat {
+        0%, 100% {
+            transform: translateX(-50%) translateY(0);
+        }
+        50% {
+            transform: translateX(-50%) translateY(-5px);
+        }
+    }
+
+    @keyframes linkPulse {
+        0%, 100% {
+            color: #10b981;
+            text-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+        }
+        50% {
+            color: #34d399;
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.8);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .code-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .array-element {
+            width: 55px;
+            height: 55px;
+            font-size: 20px;
+        }
+        
+        h1 {
+            font-size: 28px;
+        }
+        
+        .watermark {
+            font-size: 14px;
+            padding: 12px 20px;
+        }
+        
+        .pointer {
+            top: -30px;
+            font-size: 24px;
+        }
+        
+        body {
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+        
+        .algorithm-selector {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .algo-btn {
+            width: 90%;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Recherche Séquentielle et Dichotomique</h1>
+
+    <div class="algorithm-selector">
+        <button class="algo-btn active" id="seqBtn">Recherche Séquentielle</button>
+        <button class="algo-btn" id="dichoBtn">Recherche Dichotomique</button>
+    </div>
+
+    <div class="control-panel">
+        <div class="search-input">
+            <label for="searchValue">Valeur à rechercher:</label>
+            <input type="number" id="searchValue" value="42" min="10" max="99">
+        </div>
+        <div class="buttons">
+            <button id="searchBtn">Lancer la Recherche</button>
+            <button id="generateBtn">Générer Nouveau Tableau</button>
+            <button id="speedBtn">Vitesse: Lent (×1)</button>
+        </div>
+    </div>
+
+    <div class="array-display">
+        <div class="array-container" id="arrayContainer"></div>
+    </div>
+
+    <div id="steps">Sélectionnez un algorithme et cliquez sur 'Lancer la Recherche' pour commencer l'animation.</div>
+
+    <div class="status-panel">
+        <h3>État de la Recherche</h3>
+        <div class="status-info">
+            <div class="info-item">
+                <div class="info-label">Algorithm</div>
+                <div class="info-value" id="currentAlgo">Séquentielle</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Comparaisons</div>
+                <div class="info-value" id="comparisons">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Taille Tableau</div>
+                <div class="info-value" id="arraySize">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Résultat</div>
+                <div class="info-value" id="result">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="code-section">
+        <div class="code-block">
+            <h3>📋 Recherche Séquentielle</h3>
+            <pre><span class="keyword">Fonction</span> <span class="function">Recherche_seq</span> (T :tab, N, X :entier) : booléen 
+<span class="keyword">Début</span>
+    i <span class="operator">←</span> <span class="number">0</span>
+    Trouve <span class="operator">←</span> <span class="keyword">Faux</span>
+    
+    <span class="keyword">Tant que</span> (Trouve <span class="operator">=</span> <span class="keyword">Faux</span>) <span class="keyword">et</span> (i <span class="operator"><</span> N) <span class="keyword">Faire</span>
+        <span class="keyword">Si</span> T[i] <span class="operator">=</span> X <span class="keyword">alors</span>
+            Trouve <span class="operator">←</span> <span class="keyword">Vrai</span>
+        <span class="keyword">Fin si</span>
+        i <span class="operator">←</span> i <span class="operator">+</span> <span class="number">1</span>
+    <span class="keyword">Fin Tant que</span>
+    
+    <span class="keyword">Retourner</span> Trouve
+<span class="keyword">Fin</span></pre>
+        </div>
+
+        <div class="code-block">
+            <h3>📋 Recherche Dichotomique</h3>
+            <pre><span class="keyword">Fonction</span> <span class="function">Recherche_dicho</span> (T :tab, N, X :entier) : booléen 
+<span class="keyword">Début</span>
+    Trouve <span class="operator">←</span> <span class="keyword">Faux</span>
+    G <span class="operator">←</span> <span class="number">0</span>          <span class="comment"># Gauche</span>
+    D <span class="operator">←</span> N <span class="operator">-</span> <span class="number">1</span>      <span class="comment"># Droite</span>
+    
+    <span class="keyword">Tant que</span> (Trouve <span class="operator">=</span> <span class="keyword">Faux</span>) <span class="keyword">et</span> (G <span class="operator">≤</span> D) <span class="keyword">Faire</span>
+        m <span class="operator">←</span> (D <span class="operator">+</span> G) <span class="keyword">div</span> <span class="number">2</span>   <span class="comment"># Milieu</span>
+        
+        <span class="keyword">Si</span> T[m] <span class="operator">=</span> X <span class="keyword">alors</span>
+            Trouve <span class="operator">←</span> <span class="keyword">Vrai</span>
+        <span class="keyword">Sinon si</span> T[m] <span class="operator"><</span> X <span class="keyword">alors</span>
+            G <span class="operator">←</span> m <span class="operator">+</span> <span class="number">1</span>      <span class="comment"># Chercher à droite</span>
+        <span class="keyword">Sinon</span>
+            D <span class="operator">←</span> m <span class="operator">-</span> <span class="number">1</span>      <span class="comment"># Chercher à gauche</span>
+        <span class="keyword">Fin si</span>
+    <span class="keyword">Fin Tant que</span>
+    
+    <span class="keyword">Retourner</span> Trouve
+<span class="keyword">Fin</span></pre>
+        </div>
+    </div>
+
+    <div class="code-section">
+        <div class="code-block">
+            <h3>🐍 Python - Recherche Séquentielle</h3>
+            <pre><span class="keyword">def</span> <span class="function">Recherche_seq</span>(T, x, n):
+    i = <span class="number">0</span>
+    Test = <span class="keyword">False</span>
+    <span class="keyword">while</span> (i < n) <span class="keyword">and</span> (Test == <span class="keyword">False</span>):
+        <span class="keyword">if</span> T[i] == x:
+            Test = <span class="keyword">True</span>
+        <span class="keyword">else</span>:
+            i = i + <span class="number">1</span>
+    <span class="keyword">return</span> Test
+
+<span class="comment"># Exemple d'utilisation</span>
+T = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>]
+resultat = <span class="function">Recherche_seq</span>(T, <span class="number">40</span>, <span class="number">6</span>)
+<span class="function">print</span>(resultat)  <span class="comment"># True</span></pre>
+        </div>
+
+        <div class="code-block">
+            <h3>🐍 Python - Recherche Dichotomique</h3>
+            <pre><span class="keyword">def</span> <span class="function">recherche_dicho</span>(T, n, x):
+    test = <span class="keyword">False</span>
+    G = <span class="number">0</span>          <span class="comment"># Gauche</span>
+    D = n - <span class="number">1</span>      <span class="comment"># Droite</span>
+    
+    <span class="keyword">while</span> <span class="keyword">not</span> test <span class="keyword">and</span> G <= D:
+        m = (D + G) // <span class="number">2</span>   <span class="comment"># Milieu</span>
+        <span class="keyword">if</span> T[m] == x:       <span class="comment"># Trouvé!</span>
+            test = <span class="keyword">True</span>
+        <span class="keyword">elif</span> T[m] < x:      <span class="comment"># Chercher à droite</span>
+            G = m + <span class="number">1</span>
+        <span class="keyword">else</span>:               <span class="comment"># Chercher à gauche</span>
+            D = m - <span class="number">1</span>
+    <span class="keyword">return</span> test
+
+<span class="comment"># Exemple d'utilisation (tableau doit être trié!)</span>
+T = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>]
+resultat = <span class="function">recherche_dicho</span>(T, <span class="number">6</span>, <span class="number">40</span>)
+<span class="function">print</span>(resultat)  <span class="comment"># True</span></pre>
+        </div>
+    </div>
+
+    <div class="comparison-table">
+        <h3>📊 Comparaison des Algorithmes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Critère</th>
+                    <th>Recherche Séquentielle</th>
+                    <th>Recherche Dichotomique</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Prérequis</strong></td>
+                    <td>Aucun (tableau quelconque)</td>
+                    <td>Tableau doit être TRIÉ</td>
+                </tr>
+                <tr>
+                    <td><strong>Complexité</strong></td>
+                    <td>O(n) - Linéaire</td>
+                    <td>O(log n) - Logarithmique</td>
+                </tr>
+                <tr>
+                    <td><strong>Pire cas</strong></td>
+                    <td>n comparaisons</td>
+                    <td>log₂(n) comparaisons</td>
+                </tr>
+                <tr>
+                    <td><strong>Méthode</strong></td>
+                    <td>Parcours élément par élément</td>
+                    <td>Diviser pour régner</td>
+                </tr>
+                <tr>
+                    <td><strong>Utilisation</strong></td>
+                    <td>Tableaux non triés, petites tailles</td>
+                    <td>Tableaux triés, grandes tailles</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="watermark">
+    Créé par <strong>Amine</strong> | GitHub: <a href="https://github.com/AmineTNYT" target="_blank">@AmineTNYT</a>
+</div>
+
+<script>
+const arrayContainer = document.getElementById('arrayContainer');
+const seqBtn = document.getElementById('seqBtn');
+const dichoBtn = document.getElementById('dichoBtn');
+const searchBtn = document.getElementById('searchBtn');
+const generateBtn = document.getElementById('generateBtn');
+const speedBtn = document.getElementById('speedBtn');
+const searchValueInput = document.getElementById('searchValue');
+const stepsDiv = document.getElementById('steps');
+const currentAlgo = document.getElementById('currentAlgo');
+const comparisons = document.getElementById('comparisons');
+const arraySize = document.getElementById('arraySize');
+const result = document.getElementById('result');
+
+let arr = [];
+let isSearching = false;
+let currentAlgorithm = 'sequential';
+let totalComparisons = 0;
+
+// Speed settings
+let speedLevel = 1;
+let baseDelay = 1000;
+
+speedBtn.onclick = () => {
+    if (speedLevel === 1) {
+        speedLevel = 2; baseDelay = 500; speedBtn.textContent = "Vitesse: Normal (×2)";
+    } else if (speedLevel === 2) {
+        speedLevel = 4; baseDelay = 250; speedBtn.textContent = "Vitesse: Rapide (×4)";
+    } else {
+        speedLevel = 1; baseDelay = 1000; speedBtn.textContent = "Vitesse: Lent (×1)";
+    }
+};
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms / speedLevel));
+}
+
+seqBtn.onclick = () => {
+    currentAlgorithm = 'sequential';
+    seqBtn.classList.add('active');
+    dichoBtn.classList.remove('active');
+    currentAlgo.textContent = 'Séquentielle';
+    generateArray();
+    stepsDiv.innerHTML = "Recherche Séquentielle sélectionnée. Parcourt le tableau élément par élément.";
+};
+
+dichoBtn.onclick = () => {
+    currentAlgorithm = 'dichotomous';
+    dichoBtn.classList.add('active');
+    seqBtn.classList.remove('active');
+    currentAlgo.textContent = 'Dichotomique';
+    generateSortedArray();
+    stepsDiv.innerHTML = "Recherche Dichotomique sélectionnée. Nécessite un tableau trié. Divise l'intervalle de recherche par 2 à chaque étape.";
+};
+
+function generateArray() {
+    const length = 10;
+    arr = Array.from({length}, () => Math.floor(Math.random() * 90) + 10);
+    renderArray();
+    resetStats();
+}
+
+function generateSortedArray() {
+    const length = 10;
+    arr = Array.from({length}, () => Math.floor(Math.random() * 90) + 10);
+    arr.sort((a, b) => a - b);
+    renderArray();
+    resetStats();
+}
+
+function renderArray() {
+    arrayContainer.innerHTML = '';
+    arr.forEach((val, i) => {
+        const div = document.createElement('div');
+        div.className = 'array-element default';
+        div.id = `elem${i}`;
+        div.textContent = val;
+        
+        // Add index indicator
+        const indicator = document.createElement('div');
+        indicator.className = 'indicator';
+        indicator.textContent = i;
+        indicator.id = `ind${i}`;
+        
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.appendChild(div);
+        wrapper.appendChild(indicator);
+        
+        arrayContainer.appendChild(wrapper);
+    });
+    arraySize.textContent = arr.length;
+}
+
+function resetStats() {
+    comparisons.textContent = '0';
+    result.textContent = '-';
+    result.style.color = '#f1f5f9';
+    totalComparisons = 0;
+    
+    // Reset all elements to default
+    arr.forEach((_, i) => {
+        updateElement(i, 'default');
+    });
+}
+
+function updateElement(index, className) {
+    const elem = document.getElementById(`elem${index}`);
+    if (elem) {
+        elem.className = `array-element ${className}`;
+    }
+}
+
+function addPointer(index) {
+    removePointer();
+    const elem = document.getElementById(`elem${index}`);
+    if (elem) {
+        const pointer = document.createElement('div');
+        pointer.className = 'pointer';
+        pointer.textContent = '↓';
+        pointer.id = 'currentPointer';
+        elem.parentElement.appendChild(pointer);
+    }
+}
+
+function removePointer() {
+    const pointer = document.getElementById('currentPointer');
+    if (pointer) {
+        pointer.remove();
+    }
+}
+
+function addBounds(G, D) {
+    // Remove any existing bound indicators
+    document.querySelectorAll('.bounds-indicator').forEach(el => el.remove());
+    
+    // Add bound indicators
+    const leftBound = document.createElement('div');
+    leftBound.className = 'indicator bounds-indicator';
+    leftBound.textContent = `G=${G}`;
+    leftBound.style.position = 'absolute';
+    leftBound.style.bottom = '-70px';
+    leftBound.style.left = '50%';
+    leftBound.style.transform = 'translateX(-50%)';
+    leftBound.style.background = 'rgba(139, 92, 246, 0.8)';
+    
+    const rightBound = document.createElement('div');
+    rightBound.className = 'indicator bounds-indicator';
+    rightBound.textContent = `D=${D}`;
+    rightBound.style.position = 'absolute';
+    rightBound.style.bottom = '-70px';
+    rightBound.style.left = '50%';
+    rightBound.style.transform = 'translateX(-50%)';
+    rightBound.style.background = 'rgba(139, 92, 246, 0.8)';
+    
+    const leftElem = document.getElementById(`elem${G}`);
+    const rightElem = document.getElementById(`elem${D}`);
+    
+    if (leftElem && G !== D) {
+        leftElem.parentElement.appendChild(leftBound);
+        leftBound.style.left = '50%';
+    }
+    
+    if (rightElem && G !== D) {
+        rightElem.parentElement.appendChild(rightBound);
+        rightBound.style.left = '50%';
+    }
+}
+
+async function sequentialSearch(x) {
+    stepsDiv.innerHTML = `<strong>Début de la recherche séquentielle pour ${x}</strong><br>Initialisation: i = 0, Trouve = Faux`;
+    await sleep(baseDelay);
+    
+    for (let i = 0; i < arr.length; i++) {
+        totalComparisons++;
+        comparisons.textContent = totalComparisons;
+        
+        // Add pointer
+        addPointer(i);
+        updateElement(i, 'current');
+        
+        stepsDiv.innerHTML = `<strong>Itération ${i+1}</strong>: Comparaison T[${i}] = ${arr[i]} avec X = ${x}`;
+        await sleep(baseDelay);
+        
+        if (arr[i] === x) {
+            stepsDiv.innerHTML = `✅ <strong>TROUVÉ!</strong> T[${i}] = ${x}<br>Fin de la recherche avec ${totalComparisons} comparaisons`;
+            updateElement(i, 'found');
+            result.textContent = 'Trouvé';
+            result.style.color = '#10b981';
+            return true;
+        } else {
+            stepsDiv.innerHTML += `<br>❌ ${arr[i]} ≠ ${x} → Continuer la recherche`;
+            updateElement(i, 'checked');
+        }
+        
+        await sleep(baseDelay);
+    }
+    
+    stepsDiv.innerHTML = `❌ <strong>NON TROUVÉ</strong><br>La valeur ${x} n'est pas dans le tableau (${totalComparisons} comparaisons)`;
+    result.textContent = 'Non trouvé';
+    result.style.color = '#ef4444';
+    return false;
+}
+
+async function dichotomousSearch(x) {
+    stepsDiv.innerHTML = `<strong>Début de la recherche dichotomique pour ${x}</strong><br>Initialisation: G = 0, D = ${arr.length-1}, Trouve = Faux`;
+    await sleep(baseDelay);
+    
+    let G = 0;
+    let D = arr.length - 1;
+    let found = false;
+    
+    // Highlight bounds
+    updateElement(G, 'bounds');
+    updateElement(D, 'bounds');
+    addBounds(G, D);
+    
+    while (!found && G <= D) {
+        let m = Math.floor((G + D) / 2);
+        
+        // Highlight middle
+        updateElement(m, 'middle');
+        addPointer(m);
+        
+        stepsDiv.innerHTML = `<strong>Nouvelle itération:</strong> G=${G}, D=${D}, m=(${G}+${D})/2=${m}<br>Comparaison T[${m}] = ${arr[m]} avec X = ${x}`;
+        await sleep(baseDelay);
+        
+        totalComparisons++;
+        comparisons.textContent = totalComparisons;
+        
+        if (arr[m] === x) {
+            stepsDiv.innerHTML = `✅ <strong>TROUVÉ!</strong> T[${m}] = ${x}<br>Fin de la recherche avec ${totalComparisons} comparaisons`;
+            updateElement(m, 'found');
+            found = true;
+            result.textContent = 'Trouvé';
+            result.style.color = '#10b981';
+        } else if (arr[m] < x) {
+            stepsDiv.innerHTML = `${arr[m]} < ${x} → Chercher à DROITE<br>G devient m+1 = ${m}+1 = ${m+1}`;
+            // Reset old bounds
+            updateElement(G, 'default');
+            updateElement(m, 'default');
+            G = m + 1;
+            if (G <= D) updateElement(G, 'bounds');
+            updateElement(D, 'bounds');
+            addBounds(G, D);
+        } else {
+            stepsDiv.innerHTML = `${arr[m]} > ${x} → Chercher à GAUCHE<br>D devient m-1 = ${m}-1 = ${m-1}`;
+            // Reset old bounds
+            updateElement(D, 'default');
+            updateElement(m, 'default');
+            D = m - 1;
+            updateElement(G, 'bounds');
+            if (G <= D) updateElement(D, 'bounds');
+            addBounds(G, D);
+        }
+        
+        await sleep(baseDelay * 1.5);
+    }
+    
+    if (!found) {
+        stepsDiv.innerHTML = `❌ <strong>NON TROUVÉ</strong><br>La valeur ${x} n'est pas dans le tableau (${totalComparisons} comparaisons)`;
+        result.textContent = 'Non trouvé';
+        result.style.color = '#ef4444';
+        
+        // Mark all as not found
+        for (let i = 0; i < arr.length; i++) {
+            updateElement(i, 'not-found');
+        }
+    }
+    
+    return found;
+}
+
+async function startSearch() {
+    if (isSearching) return;
+    
+    isSearching = true;
+    searchBtn.disabled = true;
+    generateBtn.disabled = true;
+    searchBtn.textContent = 'Recherche en cours...';
+    
+    resetStats();
+    
+    const searchValue = parseInt(searchValueInput.value);
+    
+    if (currentAlgorithm === 'sequential') {
+        await sequentialSearch(searchValue);
+    } else {
+        await dichotomousSearch(searchValue);
+    }
+    
+    isSearching = false;
+    searchBtn.disabled = false;
+    generateBtn.disabled = false;
+    searchBtn.textContent = 'Lancer la Recherche';
+    removePointer();
+}
+
+generateBtn.onclick = () => {
+    if (currentAlgorithm === 'sequential') {
+        generateArray();
+        stepsDiv.innerHTML = "Nouveau tableau généré. La recherche séquentielle fonctionne sur n'importe quel tableau.";
+    } else {
+        generateSortedArray();
+        stepsDiv.innerHTML = "Nouveau tableau TRIÉ généré. La recherche dichotomique nécessite un tableau trié.";
+    }
+};
+
+searchBtn.onclick = startSearch;
+
+// Initialize with sequential search
+generateArray();
+</script>
+
+</body>
+</html>
